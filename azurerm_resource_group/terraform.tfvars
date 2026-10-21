@@ -3,4 +3,8 @@ rgs = {
         name = "ankita rg"
         location = "westeurope"
     }
+       rg2 = {
+        name = "simmi rg"
+        location = "westeurope"  
+    }
 }
