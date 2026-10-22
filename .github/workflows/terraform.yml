@@ -39,6 +39,9 @@ jobs:
               "subscriptionId": "b5bdd529-77ce-4d37-811b-46f7e60da7ab"
             }
 
+      - name: Verify Azure Subscription
+        run: az account show --query "{name:name, id:id, tenantId:tenantId}" -o table
+
       - name: Terraform Init
         run: terraform init
 
