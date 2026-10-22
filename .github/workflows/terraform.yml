@@ -42,14 +42,18 @@ jobs:
       - name: Verify Azure Subscription
         run: az account show --query "{name:name, id:id, tenantId:tenantId}" -o table
 
-      - name: Terraform Init
+        - name: Terraform Init
+        working-directory: azurerm_resource_group
         run: terraform init
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
+      - name: Terraform Format
+        working-directory: azurerm_resource_group
+        run: terraform fmt -recursive
 
       - name: Terraform Validate
+        working-directory: azurerm_resource_group
         run: terraform validate
 
       - name: Terraform Plan
+        working-directory: azurerm_resource_group
         run: terraform plan
