@@ -3,10 +3,9 @@ name: 'Terraform Feature Branch Plan'
 on:
   push:
     branches:
-      - fetature1 
+      - fetature1
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -15,33 +14,36 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Azure Credentials Hardcoded
-      ARM_CLIENT_ID: "a595f7b0-4bcf-4fba-a202-8242a2c74129"
-      ARM_CLIENT_SECRET: "-Zt8Q~HOYaUfgy0VfHUmFTaKIe76CcHV0d_Ibao1"
-      ARM_TENANT_ID: "e0303f1b-f8a0-4dba-a6d9-a2b2413518de"
-      ARM_SUBSCRIPTION_ID: "b5bdd529-77ce-4d37-811b-46f7e60da7ab"
+      ARM_CLIENT_ID: a595f7b0-4bcf-4fba-a202-8242a2c74129
+      ARM_CLIENT_SECRET: GXL8Q~xohEkkC6i1K32fCVhVfbsjW~4xgHivwcu_
+      ARM_TENANT_ID: e0303f1b-f8a0-4dba-a6d9-a2b2413518de
+      ARM_SUBSCRIPTION_ID: b5bdd529-77ce-4d37-811b-46f7e60da7ab
 
     steps:
-    # 1. Repository Code Checkout
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    # 2. Azure CLI Login
-    - name: Azure Login
-      uses: azure/login@v2
-      with:
-        creds: '{"clientId":"a595f7b0-4bcf-4fba-a202-8242a2c74129","clientSecret":"-Zt8Q~HOYaUfgy0VfHUmFTaKIe76CcHV0d_Ibao1","tenantId":"e0303f1b-f8a0-4dba-a6d9-a2b2413518de","subscriptionId":"b5bdd529-77ce-4d37-811b-46f7e60da7ab"}'
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          creds: '{"clientId":"a595f7b0-4bcf-4fba-a202-8242a2c74129","clientSecret":"GXL8Q~xohEkkC6i1K32fCVhVfbsjW~4xgHivwcu_","tenantId":"e0303f1b-f8a0-4dba-a6d9-a2b2413518de","subscriptionId":"b5bdd529-77ce-4d37-811b-46f7e60da7ab"}'
 
-    # 3. Setup Terraform CLI
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: "latest"
+      - name: Verify Azure Subscription
+        run: az account show --query "{name:name,id:id,tenantId:tenantId}" -o table
 
-    # 4. Terraform Init
-    - name: Terraform Init
-      run: terraform init
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.0"
 
-    # 5. Terraform Plan
-    - name: Terraform Plan
-      run: terraform plan
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
