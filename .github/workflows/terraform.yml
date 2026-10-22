@@ -27,6 +27,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Check Azure credentials
+        shell: bash
+        run: |
+          missing=()
+          for name in ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_TENANT_ID ARM_SUBSCRIPTION_ID; do
+            if [[ -z "${!name}" ]]; then
+              missing+=("$name")
+            fi
+          done
+          if (( ${#missing[@]} > 0 )); then
+            printf '::error::Missing required GitHub Actions secrets: %s\n' "${missing[*]}"
+            exit 1
+          fi
+
       - name: Azure Login
         uses: azure/login@v3
         with:
